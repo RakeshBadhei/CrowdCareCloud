@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7faff">
+  <title>{% block title %}CrowdCare{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  {% block head %}{% endblock %}
+</head>
+<body>
+<div class="site-bg" aria-hidden="true"><span></span><span></span><span></span></div>
+
+<header class="site-header" id="siteHeader">
+  <div class="nav-shell">
+    <a class="brand" href="{{ url_for('home') }}" aria-label="CrowdCare home">
+      <span class="brand-mark">C</span><span>Crowd</span><b>Care</b>
+    </a>
+
+    <button class="nav-toggle" type="button" aria-label="Open menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+
+    <nav class="main-nav" id="mainNav">
+      <a href="{{ url_for('home') }}" class="{% if request.endpoint == 'home' %}active{% endif %}">Home</a>
+      <a href="{{ url_for('campaigns') }}" class="{% if request.endpoint in ['campaigns','category_campaigns','campaign_details'] %}active{% endif %}">Campaigns</a>
+      <a href="{{ url_for('categories') }}" class="{% if request.endpoint == 'categories' %}active{% endif %}">Categories</a>
+      {% if session.get('user_id') %}
+        <a href="{{ url_for('dashboard') }}" class="{% if request.endpoint == 'dashboard' %}active{% endif %}">Dashboard</a>
+        {% if session.get('role') == 'ADMIN' %}
+          <a href="{{ url_for('admin_campaigns') }}" class="{% if request.endpoint == 'admin_campaigns' %}active{% endif %}">Admin</a>
+        {% endif %}
+      {% endif %}
+      <a href="{{ url_for('home') }}#about">About</a>
+      <a href="{{ url_for('home') }}#contact">Contact</a>
+    </nav>
+
+    <div class="nav-actions">
+      {% if session.get('user_id') %}
+        <span class="user-chip"><i></i>{{ session.get('full_name','Account')|truncate(18,True,'…') }}</span>
+        <a class="btn btn-outline btn-small" href="{{ url_for('logout') }}">Logout</a>
+      {% else %}
+        <a class="btn btn-ghost btn-small" href="{{ url_for('login') }}">Log in</a>
+        <a class="btn btn-primary btn-small" href="{{ url_for('register') }}">Join CrowdCare</a>
+      {% endif %}
+    </div>
+  </div>
+</header>
+
+<main class="page-main">
+{% block content %}{% endblock %}
+</main>
+
+<footer class="site-footer">
+  <div class="footer-shell">
+    <div>
+      <a class="brand footer-brand" href="{{ url_for('home') }}"><span class="brand-mark">C</span><span>Crowd</span><b>Care</b></a>
+      <p>Technology that brings generous people and meaningful causes together.</p>
+    </div>
+    <div class="footer-links">
+      <div><strong>Explore</strong><a href="{{ url_for('campaigns') }}">Campaigns</a><a href="{{ url_for('categories') }}">Categories</a></div>
+      <div><strong>Account</strong><a href="{{ url_for('login') }}">Login</a><a href="{{ url_for('register') }}">Register</a></div>
+      <div><strong>Support</strong><a href="{{ url_for('home') }}#contact">Contact</a><a href="{{ url_for('home') }}#about">How it works</a></div>
+    </div>
+  </div>
+  <div class="footer-bottom">© 2026 CrowdCare · Together We Care.</div>
+</footer>
+
+<div class="toast" id="uiToast" role="status" aria-live="polite"></div>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

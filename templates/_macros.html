@@ -1,0 +1,36 @@
+{% macro image_for(campaign, category='') %}
+  {% if campaign.get('cover_image') %}
+    {{ url_for('static', filename=campaign.get('cover_image')) }}
+  {% else %}
+    {% set n = (category or campaign.category_name or 'general')|lower %}
+    {% if 'medical' in n %}{{ url_for('static', filename='images/campaigns/medical.svg') }}
+    {% elif 'education' in n %}{{ url_for('static', filename='images/campaigns/education.svg') }}
+    {% elif 'animal' in n %}{{ url_for('static', filename='images/campaigns/animal.svg') }}
+    {% elif 'disaster' in n %}{{ url_for('static', filename='images/campaigns/disaster.svg') }}
+    {% elif 'environment' in n %}{{ url_for('static', filename='images/campaigns/environment.svg') }}
+    {% elif 'community' in n %}{{ url_for('static', filename='images/campaigns/community.svg') }}
+    {% else %}{{ url_for('static', filename='images/campaigns/community.svg') }}{% endif %}
+  {% endif %}
+{% endmacro %}
+
+{% macro campaign_card(campaign, compact=false) %}
+  {% set target = campaign.target_amount|float %}
+  {% set raised = campaign.raised_amount|float %}
+  {% if target > 0 %}{% set pct = (raised / target * 100) %}{% else %}{% set pct = 0 %}{% endif %}
+  {% if pct > 100 %}{% set pct = 100 %}{% endif %}
+  <article class="campaign-card reveal" data-category="{{ (campaign.category_name or 'General')|lower }}" data-progress="{{ pct }}">
+    <a class="campaign-cover" href="{{ url_for('campaign_details', campaign_id=campaign.campaign_id) }}">
+      <img src="{{ image_for(campaign) }}" alt="{{ campaign.title }}" loading="lazy">
+      <span class="cover-tag">{{ campaign.category_name or 'Community' }}</span>
+      {% if campaign.status %}<span class="cover-status status-{{ campaign.status|lower }}">{{ campaign.status|title }}</span>{% endif %}
+    </a>
+    <div class="campaign-card-body">
+      <div class="campaign-location">{% if campaign.city %}<span>⌖ {{ campaign.city }}</span>{% endif %}<span>{{ campaign.status|title if campaign.status else 'Live' }}</span></div>
+      <h3><a href="{{ url_for('campaign_details', campaign_id=campaign.campaign_id) }}">{{ campaign.title }}</a></h3>
+      <p>{{ campaign.description|truncate(118, True, '…') }}</p>
+      <div class="fund-row"><strong>₹{{ "{:,.0f}".format(raised) }}</strong><span>of ₹{{ "{:,.0f}".format(target) }}</span></div>
+      <div class="progress-track"><span class="progress-fill" data-progress="{{ pct }}"></span></div>
+      <div class="card-foot"><span>{{ "%.0f"|format(pct) }}% funded</span><a href="{{ url_for('campaign_details', campaign_id=campaign.campaign_id) }}">View cause <b>→</b></a></div>
+    </div>
+  </article>
+{% endmacro %}

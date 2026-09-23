@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Categories · CrowdCare{% endblock %}
+{% block content %}
+<section class="page-hero"><div class="container page-hero-inner reveal"><span class="eyebrow">FIND YOUR CAUSE</span><h1>What matters to you?</h1><p>Choose a category and discover campaigns built around real needs and real people.</p></div></section>
+<section class="container section-block"><div class="category-grid">
+{% for category in categories %}
+{% set n=category.category_name|lower %}
+<a class="category-tile reveal" href="{{ url_for('category_campaigns', category_id=category.category_id) }}">
+  <div class="category-art {% if 'medical' in n %}art-medical{% elif 'education' in n %}art-education{% elif 'animal' in n %}art-animal{% elif 'disaster' in n %}art-disaster{% elif 'environment' in n %}art-environment{% elif 'community' in n %}art-community{% else %}art-general{% endif %}">
+    {% if 'medical' in n %}✚{% elif 'education' in n %}▣{% elif 'animal' in n %}♥{% elif 'disaster' in n %}⌁{% elif 'environment' in n %}◉{% elif 'community' in n %}◎{% else %}✦{% endif %}
+  </div>
+  <div class="category-tile-body"><span class="eyebrow">CAUSE</span><h2>{{ category.category_name }}</h2><p>{{ category.description or 'Support meaningful campaigns and help create positive change.' }}</p><span class="text-link">Explore cause →</span></div>
+</a>
+{% else %}<div class="empty-state"><h3>No categories available</h3></div>{% endfor %}
+</div></section>
+{% endblock %}

@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% from "_macros.html" import campaign_card %}
+{% block title %}{{ category.category_name }} · CrowdCare{% endblock %}
+{% block content %}
+<section class="page-hero compact"><div class="container page-hero-inner reveal"><a class="back-link" href="{{ url_for('categories') }}">← All categories</a><span class="eyebrow">CATEGORY</span><h1>{{ category.category_name }}</h1><p>Explore campaigns under {{ category.category_name }} and find a story worth supporting.</p></div></section>
+<section class="container section-block">
+  <div class="section-head reveal"><div><span class="eyebrow">CAUSES</span><h2>{{ campaigns|length }} campaign{{ '' if campaigns|length == 1 else 's' }}</h2></div><a class="text-link" href="{{ url_for('campaigns') }}">All campaigns →</a></div>
+  <div class="campaign-grid">{% for campaign in campaigns %}{{ campaign_card(campaign) }}{% else %}<div class="empty-state"><div class="empty-icon">✦</div><h3>No campaigns in this category</h3><p>Check back soon or explore another cause.</p><a class="btn btn-primary" href="{{ url_for('campaigns') }}">Explore all</a></div>{% endfor %}</div>
+</section>
+{% endblock %}

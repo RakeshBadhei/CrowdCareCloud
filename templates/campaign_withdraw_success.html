@@ -1,0 +1,5 @@
+{% extends "base.html" %}
+{% block title %}Withdrawal recorded · CrowdCare{% endblock %}
+{% block content %}
+<section class="container success-layout"><div class="success-card reveal"><div class="success-check">✓</div><span class="eyebrow">PAYOUT REQUEST</span><h1>Withdrawal request recorded.</h1><p>Your request has been added to the campaign payout workflow.</p><div class="success-amount">₹{{ "{:,.2f}".format(withdrawal.amount|float) }}</div><div class="review-list"><div><span>Withdrawal ID</span><strong>#{{ withdrawal.withdrawal_id }}</strong></div><div><span>Campaign</span><strong>{{ withdrawal.title }}</strong></div><div><span>Status</span><strong>{{ withdrawal.status }}</strong></div></div><div class="form-actions"><a class="btn btn-primary" href="{{ url_for('campaign_details', campaign_id=withdrawal.campaign_id) }}">Back to campaign</a><a class="btn btn-soft" href="{{ url_for('my_campaigns') }}">My campaigns</a></div></div></section>
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% from "_macros.html" import image_for %}
+{% block title %}{{ campaign.title }} · CrowdCare{% endblock %}
+{% block content %}
+{% set target=campaign.target_amount|float %}{% set raised=campaign.raised_amount|float %}{% if target>0 %}{% set progress=(raised/target*100) %}{% else %}{% set progress=0 %}{% endif %}{% if progress>100 %}{% set progress=100 %}{% endif %}{% set remaining=target-raised %}{% if remaining<0 %}{% set remaining=0 %}{% endif %}
+<section class="container details-wrap">
+  <div class="breadcrumbs reveal"><a href="{{ url_for('home') }}">Home</a><span>/</span><a href="{{ url_for('campaigns') }}">Campaigns</a><span>/</span><span>{{ campaign.title|truncate(32,True,'…') }}</span></div>
+  <div class="detail-hero reveal">
+    <div class="detail-cover"><img src="{{ image_for(campaign) }}" alt="{{ campaign.title }}"></div>
+    <div class="detail-intro"><div class="detail-tags"><span class="tag">{{ campaign.category_name or 'Community' }}</span><span class="status status-{{ campaign.status|lower }}">{{ campaign.status|title }}</span></div><h1>{{ campaign.title }}</h1><p>{{ campaign.description|truncate(210, True, '…') }}</p><div class="creator-line"><span class="creator-avatar">{{ (campaign.creator_name or 'C')[0]|upper }}</span><span>Created by <a href="{{ url_for('creator_profile', creator_id=campaign.creator_id) }}">{{ campaign.creator_name or 'CrowdCare creator' }}</a> · {{ campaign.city or 'India' }}</span></div></div>
+  </div>
+  <div class="details-grid">
+    <div>
+      <section class="surface reveal"><div class="surface-head"><div><span class="eyebrow">FUNDRAISING PROGRESS</span><h2>Every step counts.</h2></div><strong class="big-percent">{{ "%.0f"|format(progress) }}%</strong></div>
+        <div class="big-money"><strong>₹{{ "{:,.0f}".format(raised) }}</strong><span>raised of ₹{{ "{:,.0f}".format(target) }}</span></div>
+        <div class="progress-track large"><span class="progress-fill" data-progress="{{ progress }}"></span></div>
+        <div class="fund-summary"><span>₹{{ "{:,.0f}".format(raised) }} raised</span><span>{% if remaining>0 %}₹{{ "{:,.0f}".format(remaining) }} to go{% else %}Target reached{% endif %}</span></div>
+        <div class="detail-stats"><div><small>Goal</small><b>₹{{ "{:,.0f}".format(target) }}</b></div><div><small>Start</small><b>{{ campaign.start_date }}</b></div><div><small>End</small><b>{{ campaign.end_date }}</b></div></div>
+      </section>
+      <section class="surface reveal"><span class="eyebrow">THE STORY</span><h2>About this campaign</h2><p class="long-copy">{{ campaign.description or 'No description has been provided for this campaign.' }}</p></section>
+      {% if session.get("role")=="DONOR" and campaign.status in ["APPROVED","ACTIVE"] and remaining>0 %}
+      <section class="support-cta reveal"><div><span class="eyebrow">YOU CAN HELP</span><h2>Ready to make a difference?</h2><p>Your contribution becomes part of this campaign's story.</p></div><a class="btn btn-primary btn-large" href="{{ url_for('donate', campaign_id=campaign.campaign_id) }}">Donate now ♥</a></section>
+      {% elif session.get("role")=="DONOR" and campaign.status=="COMPLETED" %}
+      <section class="notice-card success">✓ This campaign reached its fundraising target and is no longer accepting donations.</section>
+      {% elif campaign.status=="CLOSED" %}
+      <section class="notice-card warning">This campaign is closed and is no longer accepting donations.</section>
+      {% endif %}
+    </div>
+    <aside>
+      <section class="surface reveal"><span class="eyebrow">AT A GLANCE</span><h2>Campaign details</h2><div class="detail-list"><div><span>Category</span><b>{{ campaign.category_name or 'Uncategorized' }}</b></div><div><span>Creator</span><b><a href="{{ url_for('creator_profile', creator_id=campaign.creator_id) }}">{{ campaign.creator_name or 'Unknown' }}</a></b></div><div><span>Location</span><b>{{ campaign.city or 'Not specified' }}</b></div><div><span>Start date</span><b>{{ campaign.start_date }}</b></div><div><span>End date</span><b>{{ campaign.end_date }}</b></div><div><span>Status</span><b>{{ campaign.status }}</b></div></div></section>
+      {% if session.get("role")=="CREATOR" and creator_owns_campaign %}
+      <section class="surface creator-funds-card reveal"><span class="eyebrow">YOUR CAMPAIGN</span><h2>Campaign funds</h2><div class="fund-number">₹{{ "{:,.2f}".format(raised) }}</div><p>Current campaign balance before completed withdrawals.</p>{% if creator_bank_account %}<div class="bank-summary"><span>Payout account</span><strong>{{ creator_bank_account.bank_name }} · ••••{{ creator_bank_account.account_number[-4:] }} · {{ creator_bank_account.ifsc_code }}</strong></div>{% else %}<div class="notice-card warning">Register your bank account before requesting a payout.</div>{% endif %}{% if campaign_withdrawable and creator_bank_account %}<form method="POST" action="{{ url_for('campaign_withdraw', campaign_id=campaign.campaign_id) }}" class="stack-form"><input name="amount" type="number" min="0.01" step="0.01" max="{{ campaign_withdrawable }}" placeholder="Amount to withdraw" required><button class="btn btn-primary full-btn" type="submit">Request withdrawal →</button></form>{% else %}<div class="notice-card">No funds are currently available to withdraw.</div>{% endif %}{% if campaign_withdrawals %}<div class="withdraw-history">{% for w in campaign_withdrawals %}<div><span>#{{ w.withdrawal_id }} · {{ w.requested_at }}</span><strong>₹{{ "%.2f"|format(w.amount|float) }} · {{ w.status }}</strong></div>{% endfor %}</div>{% endif %}</section>
+      {% endif %}
+      {% if session.get("role")=="ADMIN" %}
+      <section class="surface admin-actions-card reveal"><div class="surface-head"><div><span class="eyebrow">ADMIN</span><h2>Campaign controls</h2></div></div>
+        {% if campaign.status=="PENDING" %}
+        <form method="POST" action="{{ url_for('approve_campaign', campaign_id=campaign.campaign_id) }}"><button class="btn btn-success full-btn">✓ Approve campaign</button></form>
+        <form method="POST" action="{{ url_for('reject_campaign', campaign_id=campaign.campaign_id) }}" class="stack-form"><input name="rejection_reason" maxlength="500" required placeholder="Reason for rejection"><button class="btn btn-danger full-btn">Reject campaign</button></form>
+        {% elif campaign.status in ["APPROVED","ACTIVE"] %}
+        <form method="POST" action="{{ url_for('close_campaign', campaign_id=campaign.campaign_id) }}" class="stack-form"><input name="closure_reason" maxlength="500" required placeholder="Reason for closing"><button class="btn btn-danger full-btn">Close campaign</button></form>
+        {% elif campaign.status=="CLOSED" %}
+          {% if donation_count>0 and completed_donation_total>0 and completed_withdrawal_amount|float==0 %}
+          <form method="POST" action="{{ url_for('refund_all_donors', campaign_id=campaign.campaign_id) }}" onsubmit="return confirm('Refund all completed donations for this closed campaign?')"><button class="btn btn-success full-btn">↩ Refund all donors · ₹{{ "%.2f"|format(completed_donation_total|float) }}</button></form>
+          {% elif completed_withdrawal_amount|float>0 %}<div class="notice-card danger">Refund blocked because completed creator withdrawals total ₹{{ "%.2f"|format(completed_withdrawal_amount|float) }}.</div>
+          {% else %}<div class="notice-card">No completed donations to refund.</div>{% endif %}
+        {% else %}<div class="notice-card">No admin action is available for this status.</div>{% endif %}
+        {% if donation_count==0 %}<form method="POST" action="{{ url_for('delete_campaign', campaign_id=campaign.campaign_id) }}" onsubmit="return confirm('Delete this campaign permanently?')"><button class="btn btn-danger full-btn">Delete permanently</button></form>{% else %}<div class="notice-card">Delete is disabled because donation history exists. Close the campaign instead.</div>{% endif %}
+        {% if campaign.closure_reason %}<div class="reason-box"><strong>Closure reason</strong><p>{{ campaign.closure_reason }}</p></div>{% endif %}{% if campaign.rejection_reason %}<div class="reason-box danger"><strong>Rejection reason</strong><p>{{ campaign.rejection_reason }}</p></div>{% endif %}
+      </section>
+      {% endif %}
+    </aside>
+  </div>
+  <div class="page-back reveal"><a href="{{ url_for('campaigns') }}">← Back to campaigns</a></div>
+</section>
+{% endblock %}

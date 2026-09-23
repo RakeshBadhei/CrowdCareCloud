@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Creator Verification · CrowdCare{% endblock %}
+{% block content %}
+<section class="page-hero compact"><div class="container page-hero-inner reveal"><span class="eyebrow">ADMINISTRATION</span><h1>Creator verification.</h1><p>Review organization information and all four documents before approving a creator.</p></div></section>
+<section class="container admin-section">
+<div class="verification-notice reveal"><span>✓</span><div><strong>Review protocol</strong><p>Open every submitted document. Then confirm the checklist to enable approval. Rejections require a reason.</p></div></div>
+<div class="verification-list">
+{% for item in verifications %}
+<article class="verification-card reveal">
+<div class="verification-head"><div class="creator-avatar large">{{ (item.full_name or 'C')[0]|upper }}</div><div><span class="eyebrow">{{ item.organization_name }}</span><h2>{{ item.full_name }}</h2><p>{{ item.account_email }} · {{ item.phone or 'No phone' }}</p></div><span class="status status-{{ item.verification_status|lower }}">{{ item.verification_status|title }}</span></div>
+<div class="verification-grid"><div><small>NGO registration</small><strong>{{ item.ngo_registration_number }}</strong></div><div><small>Official NGO email</small><strong>{{ item.ngo_email }}</strong></div><div><small>Location</small><strong>{{ item.location }}</strong></div><div><small>Submitted</small><strong>{{ item.submitted_at }}</strong></div></div>
+<div class="document-grid">
+{% for dtype,label,short in [('registration_certificate','Registration certificate','registration'),('pan_document','PAN document','pan'),('representative_id','Representative ID','representative'),('bank_proof','Bank proof','bank')] %}
+<div class="document-card"><span>{{ '%02d'|format(loop.index) }}</span><div><strong>{{ label }}</strong><small>Open and review the submitted file.</small></div><a id="doc-{{ item.verification_id }}-{{ short }}" class="doc-view" data-verification-id="{{ item.verification_id }}" href="{{ url_for('admin_creator_verification_document', verification_id=item.verification_id, document_type=dtype) }}" target="_blank" onclick="markDocumentViewed('{{ item.verification_id }}','{{ short }}')">View →</a></div>
+{% endfor %}
+</div>
+<div class="verification-record"><span>Submitted {{ item.submitted_at }}</span>{% if item.reviewed_at %}<span>Reviewed {{ item.reviewed_at }}</span>{% endif %}{% if item.reviewer_name %}<span>By {{ item.reviewer_name }}</span>{% endif %}</div>
+{% if item.verification_status=="REJECTED" and item.rejection_reason %}<div class="notice-card danger"><strong>Rejection reason:</strong> {{ item.rejection_reason }}</div>{% endif %}
+{% if item.verification_status=="APPROVED" %}<div class="notice-card success"><strong>Verification completed.</strong> Approved by {{ item.reviewer_name or 'Recorded administrator' }} on {{ item.reviewed_at or 'recorded date' }}.</div>{% endif %}
+{% if item.verification_status=="PENDING" %}
+<form id="approval-form-{{ item.verification_id }}" method="POST" action="{{ url_for('admin_creator_approval', user_id=item.user_id) }}" class="verification-decision">
+<input type="hidden" name="approval_status" value="APPROVED"><input type="hidden" name="documents_viewed" value="NO">
+<label class="check-line"><input type="checkbox" name="review_confirmed" value="YES" onchange="updateApproveButton('{{ item.verification_id }}')"><span><strong>I confirm that I reviewed all submitted information and all four documents.</strong> I verify this creator request based on the documents provided.</span></label>
+<div class="decision-actions"><button class="btn btn-success approve" type="submit" disabled>✓ Verify & approve</button><button class="btn btn-danger" type="button" onclick="toggleReject('{{ item.verification_id }}')">Reject creator</button></div></form>
+<div class="reject-reason" id="reason-{{ item.verification_id }}"><form method="POST" action="{{ url_for('admin_creator_approval', user_id=item.user_id) }}" onsubmit="return confirmReject(this)"><input type="hidden" name="approval_status" value="REJECTED"><textarea name="rejection_reason" maxlength="500" required placeholder="Enter the specific reason for rejection…"></textarea><button class="btn btn-danger" type="submit">Confirm rejection</button></form></div>
+{% endif %}
+</article>
+{% else %}<div class="empty-state"><div class="empty-icon">✓</div><h3>No creator verification requests</h3><p>New creator submissions will appear here for review.</p></div>{% endfor %}
+</div>
+</section>
+{% endblock %}
+{% block scripts %}
+<script>
+function markDocumentViewed(id,type){const el=document.getElementById('doc-'+id+'-'+type);if(el){el.classList.add('viewed');el.textContent='Viewed ✓';}const form=document.getElementById('approval-form-'+id);if(!form)return;const viewed=document.querySelectorAll('.doc-view[data-verification-id="'+id+'"].viewed').length;form.querySelector('input[name="documents_viewed"]').value=viewed>=4?'YES':'NO';updateApproveButton(id);}
+function updateApproveButton(id){const form=document.getElementById('approval-form-'+id);if(!form)return;const docs=form.querySelector('input[name="documents_viewed"]').value==='YES';const confirmed=form.querySelector('input[name="review_confirmed"]').checked;form.querySelector('.approve').disabled=!(docs&&confirmed);}
+function toggleReject(id){const box=document.getElementById('reason-'+id);box.classList.toggle('open');}
+function confirmReject(form){const reason=form.querySelector('textarea');if(!reason.value.trim()){alert('Please enter a rejection reason.');reason.focus();return false;}return confirm('Reject this creator verification request?');}
+</script>
+{% endblock %}

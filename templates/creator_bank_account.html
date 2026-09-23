@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Bank Account · CrowdCare{% endblock %}
+{% block content %}
+<section class="form-hero compact"><div class="container form-hero-inner reveal"><span class="eyebrow">CREATOR PAYOUTS</span><h1>Your bank account.</h1><p>Keep the payout destination for your CrowdCare campaigns up to date.</p></div></section>
+<section class="container narrow-layout"><div class="form-card reveal"><div class="form-card-head"><div><span class="eyebrow">PAYOUT ACCOUNT</span><h2>{% if bank_account %}Update bank details{% else %}Register bank details{% endif %}</h2></div><span class="secure-pill">⌁ Secure</span></div>
+<form method="POST" autocomplete="off">
+<div class="form-grid">
+<div class="field full"><label for="account_holder_name">Account holder name</label><input id="account_holder_name" name="account_holder_name" maxlength="100" value="{{ bank_account.account_holder_name if bank_account else '' }}" required></div>
+<div class="field full"><label for="bank_name">Bank name</label><input id="bank_name" name="bank_name" maxlength="150" value="{{ bank_account.bank_name if bank_account else '' }}" required></div>
+<div class="field"><label for="account_number">Account number</label><input id="account_number" name="account_number" type="password" inputmode="numeric" maxlength="18" pattern="[0-9]{9,18}" autocomplete="new-password" required><small class="field-hint">9–18 digits. Existing number is never displayed.</small></div>
+<div class="field"><label for="confirm_account_number">Confirm account number</label><input id="confirm_account_number" name="confirm_account_number" type="password" inputmode="numeric" maxlength="18" pattern="[0-9]{9,18}" required></div>
+<div class="field full"><label for="ifsc_code">IFSC code</label><input id="ifsc_code" name="ifsc_code" maxlength="11" pattern="[A-Za-z]{4}0[A-Za-z0-9]{6}" value="{{ bank_account.ifsc_code if bank_account else '' }}" style="text-transform:uppercase" required><small class="field-hint">Example: SBIN0001234</small></div>
+</div>
+<div class="form-actions"><a class="btn btn-soft" href="{{ url_for('dashboard') }}">Back to dashboard</a><button class="btn btn-primary" type="submit">{% if bank_account %}Update account{% else %}Save account{% endif %} →</button></div>
+</form></div><aside class="security-card reveal delay-1"><div class="security-icon">✓</div><h3>Privacy by default</h3><p>Your full account number is not shown on the dashboard. Only the final four digits are displayed after registration.</p></aside></section>
+{% endblock %}

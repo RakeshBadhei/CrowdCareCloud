@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Dashboard · CrowdCare{% endblock %}
+{% block content %}
+<section class="dashboard-hero"><div class="container dashboard-hero-inner reveal"><div><span class="eyebrow">YOUR CROWDCARE SPACE</span><h1>Welcome, {{ session["full_name"] }}.</h1><p>{% if session["role"]=="ADMIN" %}A clear command center for keeping the platform healthy.{% elif session["role"]=="CREATOR" %}Build your cause, track momentum, and manage campaign funds.{% else %}Discover causes and keep your contribution history close.{% endif %}</p></div><div class="role-orb">{{ session["role"][0] }}</div></div></section>
+<section class="container dashboard-section">
+{% if session["role"]=="ADMIN" %}
+<div class="section-head"><div><span class="eyebrow">ADMINISTRATION</span><h2>Platform command center</h2><p>Everything you need to review, monitor and manage CrowdCare.</p></div></div>
+<div class="dashboard-grid">
+<a class="dashboard-tile tile-feature" href="{{ url_for('admin_campaigns') }}"><span class="tile-icon">✓</span><div><h3>Campaign management</h3><p>Review submitted campaigns, approve or reject them, close campaigns and process refunds.</p><b>Open management →</b></div></a>
+<a class="dashboard-tile" href="{{ url_for('admin_users') }}"><span class="tile-icon">♙</span><div><h3>User management</h3><p>Manage donors, creators, roles and account status.</p><b>Manage users →</b></div></a>
+<a class="dashboard-tile" href="{{ url_for('admin_creator_verifications') }}"><span class="tile-icon">◆</span><div><h3>Creator verification</h3><p>Review organization details and all submitted documents.</p><b>Review requests →</b></div></a>
+<a class="dashboard-tile" href="{{ url_for('admin_donations') }}"><span class="tile-icon">₹</span><div><h3>Donation records</h3><p>Monitor contributions, payment methods and refund status.</p><b>View donations →</b></div></a>
+<a class="dashboard-tile" href="{{ url_for('admin_reports') }}"><span class="tile-icon">▥</span><div><h3>Reports & overview</h3><p>See platform totals, campaign status and recent activity.</p><b>Open reports →</b></div></a>
+<a class="dashboard-tile" href="{{ url_for('campaigns') }}"><span class="tile-icon">↗</span><div><h3>Public experience</h3><p>See exactly what donors see on the campaign side.</p><b>View campaigns →</b></div></a>
+</div>
+{% elif session["role"]=="CREATOR" %}
+<div class="section-head"><div><span class="eyebrow">CREATOR SPACE</span><h2>Build something people can believe in.</h2><p>Your campaign tools, payout details and public discovery in one place.</p></div><a class="btn btn-primary" href="{{ url_for('create_campaign') }}">+ New campaign</a></div>
+<div class="dashboard-grid">
+<a class="dashboard-tile tile-feature" href="{{ url_for('create_campaign') }}"><span class="tile-icon">✎</span><div><h3>Create campaign</h3><p>Turn your cause into a clear, compelling fundraising story.</p><b>Start creating →</b></div></a>
+<a class="dashboard-tile" href="{{ url_for('my_campaigns') }}"><span class="tile-icon">◫</span><div><h3>My campaigns</h3><p>Track approval, funding, withdrawals and campaign progress.</p><b>Open campaigns →</b></div></a>
+<a class="dashboard-tile" href="{{ url_for('creator_bank_account') }}"><span class="tile-icon">₹</span><div><h3>Bank account</h3>{% if creator_bank_account %}<p>{{ creator_bank_account.bank_name }} · ••••{{ creator_bank_account.account_number[-4:] }}</p><b>Manage payout account →</b>{% else %}<p>Register a payout account before withdrawing campaign funds.</p><b>Register account →</b>{% endif %}</div></a>
+<a class="dashboard-tile" href="{{ url_for('campaigns') }}"><span class="tile-icon">◉</span><div><h3>Browse campaigns</h3><p>Explore the wider CrowdCare community.</p><b>Explore →</b></div></a>
+</div>
+{% else %}
+<div class="section-head"><div><span class="eyebrow">DONOR SPACE</span><h2>Support stories that matter.</h2><p>Find a campaign, make a contribution and keep track of your giving.</p></div><a class="btn btn-primary" href="{{ url_for('campaigns') }}">Explore causes</a></div>
+<div class="dashboard-grid donor-grid">
+<a class="dashboard-tile tile-feature" href="{{ url_for('campaigns') }}"><span class="tile-icon">♥</span><div><h3>Explore campaigns</h3><p>Browse verified, public campaigns and find a cause that speaks to you.</p><b>Find a cause →</b></div></a>
+<a class="dashboard-tile" href="{{ url_for('my_donations') }}"><span class="tile-icon">₹</span><div><h3>My donations</h3><p>Review your contribution history, payment methods and refund status.</p><b>View history →</b></div></a>
+</div>
+{% endif %}
+<div class="dashboard-quick"><a href="{{ url_for('home') }}">← Home</a><a href="{{ url_for('logout') }}">Sign out</a></div>
+</section>
+{% endblock %}

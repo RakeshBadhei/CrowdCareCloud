@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% from "_macros.html" import image_for %}
+{% block title %}My Campaigns · CrowdCare{% endblock %}
+{% block content %}
+<section class="page-hero compact"><div class="container page-hero-inner reveal"><span class="eyebrow">CREATOR SPACE</span><h1>My campaigns.</h1><p>Track every campaign you create, from review to fundraising progress and payout history.</p><a class="btn btn-primary" href="{{ url_for('create_campaign') }}">+ Create campaign</a></div></section>
+<section class="container section-block">
+{% if campaigns %}
+<div class="creator-campaign-list">
+{% for campaign in campaigns %}
+{% set target=campaign.target_amount|float %}{% set raised=campaign.raised_amount|float %}{% if target>0 %}{% set progress=raised/target*100 %}{% else %}{% set progress=0 %}{% endif %}{% if progress>100 %}{% set progress=100 %}{% endif %}
+<article class="creator-campaign-card reveal">
+  <div class="creator-card-cover"><img src="{{ image_for(campaign) }}" alt="{{ campaign.title }}"><span class="status status-{{ campaign.status|lower }}">{{ campaign.status|title }}</span></div>
+  <div class="creator-card-main"><div class="campaign-location"><span>{{ campaign.category_name or 'General' }}</span><span>⌖ {{ campaign.city or 'Not specified' }}</span></div><h2>{{ campaign.title }}</h2><p>{{ campaign.description|truncate(150,True,'…') }}</p>
+  <div class="fund-row"><strong>₹{{ "{:,.0f}".format(raised) }}</strong><span>Goal ₹{{ "{:,.0f}".format(target) }}</span></div><div class="progress-track"><span class="progress-fill" data-progress="{{ progress }}"></span></div><div class="card-foot"><span>{{ "%.0f"|format(progress) }}% funded</span><span>#{{ campaign.campaign_id }}</span></div>
+  <div class="creator-metrics"><div><small>Start</small><b>{{ campaign.start_date }}</b></div><div><small>End</small><b>{{ campaign.end_date }}</b></div><div><small>Target</small><b>₹{{ "{:,.0f}".format(target) }}</b></div></div>
+  {% if campaign.status=="PENDING" %}<div class="notice-card">Waiting for administrator approval.</div>{% elif campaign.status=="APPROVED" or campaign.status=="ACTIVE" %}<div class="notice-card success">Your campaign is approved and can accept donations.</div>{% elif campaign.status=="COMPLETED" %}<div class="notice-card success">Target reached. This campaign is completed.</div>{% elif campaign.status=="REJECTED" %}<div class="notice-card danger"><strong>Rejection reason:</strong> {{ campaign.rejection_reason or 'No reason recorded.' }}</div>{% elif campaign.status=="CLOSED" %}<div class="notice-card warning">This campaign is closed and no longer accepts donations.</div>{% endif %}
+  {% if campaign.status in ["APPROVED","ACTIVE","COMPLETED"] %}
+  <div class="withdraw-summary"><div><small>Raised</small><b>₹{{ "{:,.2f}".format(campaign.raised_amount|float) }}</b></div><div><small>Reserved / withdrawn</small><b>₹{{ "{:,.2f}".format(campaign.withdrawal_reserved|default(0)|float) }}</b></div><div><small>Available</small><b>₹{{ "{:,.2f}".format(campaign.withdrawal_available|default(0)|float) }}</b></div></div>
+  {% set campaign_withdrawals = withdrawals_by_campaign.get(campaign.campaign_id, []) %}{% if campaign_withdrawals %}<div class="withdraw-history">{% for withdrawal in campaign_withdrawals %}<div><span>#{{ withdrawal.withdrawal_id }} · {{ withdrawal.requested_at }}</span><strong>₹{{ "{:,.2f}".format(withdrawal.amount|float) }} · {{ withdrawal.status }}</strong></div>{% endfor %}</div>{% endif %}
+  {% endif %}
+  <div class="creator-card-actions"><a class="btn btn-soft" href="{{ url_for('campaign_details', campaign_id=campaign.campaign_id) }}">View campaign →</a></div>
+  </div>
+</article>
+{% endfor %}
+</div>
+{% else %}
+<div class="empty-state"><div class="empty-icon">＋</div><h3>Your campaign list is empty.</h3><p>Create your first campaign and start telling your story.</p><a class="btn btn-primary" href="{{ url_for('create_campaign') }}">Create campaign</a></div>
+{% endif %}
+</section>
+{% endblock %}

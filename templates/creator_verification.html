@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Creator Verification · CrowdCare{% endblock %}
+{% block content %}
+<section class="form-hero compact"><div class="container form-hero-inner reveal"><span class="eyebrow">CREATOR VERIFICATION</span><h1>Tell us who you represent.</h1><p>Submit your organization details and supporting documents. An administrator will review the request before creator features are unlocked.</p></div></section>
+<section class="container form-layout"><div class="form-card reveal"><div class="form-card-head"><div><span class="eyebrow">ORGANIZATION REVIEW</span><h2>Verification details</h2></div><span class="step-badge">04 documents</span></div>
+<form method="POST" enctype="multipart/form-data"><div class="form-grid">
+<div class="field full"><label for="organization_name">NGO / organization name</label><input id="organization_name" name="organization_name" value="{{ creator.organization_name or '' }}" required></div>
+<div class="field"><label for="ngo_registration_number">NGO registration ID</label><input id="ngo_registration_number" name="ngo_registration_number" value="{{ creator.ngo_registration_number or '' }}" required></div>
+<div class="field"><label for="ngo_email">Official NGO email</label><input id="ngo_email" name="ngo_email" type="email" value="{{ creator.ngo_email or '' }}" required></div>
+<div class="field full"><label for="location">Location / address</label><input id="location" name="location" value="{{ creator.location or '' }}" required></div>
+<div class="field full"><label>Required documents</label><div class="upload-grid">
+<label class="upload-box"><span>01</span><strong>Registration certificate</strong><small>PDF, JPG, PNG · max 5 MB</small><input type="file" name="registration_certificate" accept=".pdf,.png,.jpg,.jpeg" {% if not creator.registration_certificate %}required{% endif %}></label>
+<label class="upload-box"><span>02</span><strong>PAN document</strong><small>PDF, JPG, PNG · max 5 MB</small><input type="file" name="pan_document" accept=".pdf,.png,.jpg,.jpeg" {% if not creator.pan_document %}required{% endif %}></label>
+<label class="upload-box"><span>03</span><strong>Representative ID</strong><small>PDF, JPG, PNG · max 5 MB</small><input type="file" name="representative_id_document" accept=".pdf,.png,.jpg,.jpeg" {% if not creator.representative_id_document %}required{% endif %}></label>
+<label class="upload-box"><span>04</span><strong>Bank proof</strong><small>PDF, JPG, PNG · max 5 MB</small><input type="file" name="bank_proof" accept=".pdf,.png,.jpg,.jpeg" {% if not creator.bank_proof %}required{% endif %}></label>
+</div></div>
+</div><div class="form-note"><span>i</span><div><strong>All four documents are required.</strong><p>Accepted formats are PDF, PNG, JPG and JPEG. Keep each file under 5 MB.</p></div></div>
+<div class="form-actions"><a class="btn btn-soft" href="{{ url_for('dashboard') }}">Back</a><button class="btn btn-primary" type="submit">Submit for review →</button></div></form></div><aside class="form-side reveal delay-1"><div class="side-art">✓</div><span class="eyebrow">WHAT HAPPENS NEXT</span><h3>Your documents are reviewed by an administrator.</h3><ul><li>All four files are checked.</li><li>Approval or rejection is recorded.</li><li>Rejected requests can be resubmitted.</li></ul></aside></section>
+{% endblock %}

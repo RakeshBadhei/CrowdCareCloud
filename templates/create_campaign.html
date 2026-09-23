@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Create Campaign · CrowdCare{% endblock %}
+{% block content %}
+<section class="form-hero"><div class="container form-hero-inner reveal"><span class="eyebrow">CREATE SOMETHING MEANINGFUL</span><h1>Turn your cause into a campaign.</h1><p>Give supporters the context they need: what happened, what you need, and how their help will matter.</p></div></section>
+<section class="container form-layout">
+<div class="form-card reveal">
+<div class="form-card-head"><div><span class="eyebrow">NEW CAMPAIGN</span><h2>Campaign details</h2></div><span class="step-badge">01 · Story</span></div>
+<form method="POST">
+<div class="form-grid">
+<div class="field full"><label for="title">Campaign title</label><input id="title" name="title" maxlength="200" required placeholder="e.g. Help rebuild a community classroom"></div>
+<div class="field"><label for="category_id">Category</label><select id="category_id" name="category_id" required><option value="">Select a category</option>{% for category in categories %}<option value="{{ category.category_id }}">{{ category.category_name }}</option>{% endfor %}</select></div>
+<div class="field"><label for="target_amount">Fundraising goal</label><div class="input-prefix"><span>₹</span><input id="target_amount" name="target_amount" type="number" min="1" step="0.01" placeholder="50000" required></div></div>
+<div class="field full"><label for="description">Your story</label><textarea id="description" name="description" rows="7" maxlength="5000" required placeholder="Explain the situation, who needs help, what the funds will cover, and why support matters."></textarea><small class="field-hint">Clear stories help people understand the impact they can make.</small></div>
+<div class="field"><label for="city">City</label><input id="city" name="city" maxlength="100" required placeholder="Bhubaneswar"></div>
+<div class="field"></div>
+<div class="field"><label for="start_date">Start date</label><input id="start_date" name="start_date" type="date" required></div>
+<div class="field"><label for="end_date">End date</label><input id="end_date" name="end_date" type="date" required></div>
+</div>
+<div class="form-note"><span>i</span><div><strong>Review before going live</strong><p>Every new campaign is submitted for administrator review before public fundraising begins.</p></div></div>
+<div class="form-actions"><a class="btn btn-soft" href="{{ url_for('dashboard') }}">Cancel</a><button class="btn btn-primary" type="submit">Submit campaign →</button></div>
+</form>
+</div>
+<aside class="form-side reveal delay-1"><div class="side-art">✦</div><span class="eyebrow">A GOOD CAMPAIGN</span><h3>Make the need easy to understand.</h3><ul><li>Use a specific, human title.</li><li>Explain exactly where funds will go.</li><li>Set a realistic target.</li><li>Keep dates and location accurate.</li></ul></aside>
+</section>
+{% endblock %}

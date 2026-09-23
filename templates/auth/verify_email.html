@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block title %}Verify email · CrowdCare{% endblock %}
+{% block content %}
+<section class="auth-layout otp-layout"><div class="auth-showcase reveal"><span class="eyebrow">SECURITY CHECK</span><h1>One small step before you continue.</h1><p>We sent a 4-digit code to <strong>{{ user.email }}</strong>. This check is required for every login.</p><div class="otp-steps"><span class="done">✓</span><span></span><b>Enter code</b></div></div>
+<div class="auth-card otp-card reveal delay-1"><span class="otp-lock">✉</span><span class="eyebrow">EMAIL VERIFICATION</span><h2>Enter your OTP</h2><p class="muted">Use the 4-digit code sent to your registered email.</p><form method="POST" action="{{ url_for('verify_email') }}"><input class="otp-input" id="otp" name="otp" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" minlength="4" autocomplete="one-time-code" autofocus required><button class="btn btn-primary full-btn" type="submit">Verify & continue →</button></form><div class="demo-otp"><span>Demo OTP</span><strong>{{ demo_otp }}</strong></div><form method="POST" action="{{ url_for('resend_email_otp') }}"><button class="text-button" type="submit">↻ Resend OTP</button></form></div></section>
+{% endblock %}

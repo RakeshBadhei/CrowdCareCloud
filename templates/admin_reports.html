@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Reports · CrowdCare{% endblock %}
+{% block content %}
+<section class="page-hero compact"><div class="container page-hero-inner reveal"><span class="eyebrow">ADMINISTRATION</span><h1>Reports & overview.</h1><p>A live snapshot of fundraising activity across CrowdCare.</p></div></section>
+<section class="container admin-section">
+<div class="report-kpis reveal"><div><span>Total raised</span><strong>₹{{ "%.0f"|format(donation_summary.total_donated or 0) }}</strong><small>Completed donations</small></div><div><span>Campaigns</span><strong>{{ campaign_summary.total_campaigns or 0 }}</strong><small>Total created</small></div><div><span>Donors</span><strong>{{ donor_summary.total_donors or 0 }}</strong><small>Registered donors</small></div><div><span>Donations</span><strong>{{ donation_summary.total_donations or 0 }}</strong><small>Completed records</small></div></div>
+<div class="report-grid">
+<section class="surface reveal"><span class="eyebrow">CAMPAIGNS</span><h2>Campaign status</h2><div class="status-bars"><div><span>Pending</span><b>{{ status_counts.PENDING }}</b><i style="width:{{ status_counts.PENDING*10 if status_counts.PENDING<10 else 100 }}%"></i></div><div><span>Approved</span><b>{{ status_counts.APPROVED }}</b><i style="width:{{ status_counts.APPROVED*10 if status_counts.APPROVED<10 else 100 }}%"></i></div><div><span>Rejected</span><b>{{ status_counts.REJECTED }}</b><i style="width:{{ status_counts.REJECTED*10 if status_counts.REJECTED<10 else 100 }}%"></i></div></div></section>
+<section class="surface reveal"><span class="eyebrow">PAYMENTS</span><h2>Payment methods</h2>{% for payment in payment_methods %}<div class="report-row"><span><strong>{{ payment.payment_method|replace('_',' ') }}</strong><small>{{ payment.count }} donation(s)</small></span><b>₹{{ "%.0f"|format(payment.total or 0) }}</b></div>{% else %}<p class="muted">No completed donations yet.</p>{% endfor %}</section>
+<section class="surface report-wide reveal"><div class="surface-head"><div><span class="eyebrow">ACTIVITY</span><h2>Recent donations</h2></div><a class="text-link" href="{{ url_for('admin_donations') }}">View all →</a></div>{% for donation in recent_donations %}<div class="report-row"><span><strong>{{ donation.donor_name }}</strong><small>{{ donation.campaign_title }} · {{ donation.payment_method }}</small></span><b>₹{{ "%.2f"|format(donation.amount or 0) }}</b></div>{% else %}<p class="muted">No recent activity.</p>{% endfor %}</section>
+</div>
+</section>
+{% endblock %}

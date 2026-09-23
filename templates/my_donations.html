@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}My Donations · CrowdCare{% endblock %}
+{% block content %}
+<section class="page-hero compact"><div class="container page-hero-inner reveal"><span class="eyebrow">YOUR GIVING</span><h1>My donations.</h1><p>A simple record of the causes you've supported through CrowdCare.</p></div></section>
+<section class="container section-block">
+{% if donations %}
+<div class="history-summary reveal"><div><span>Total records</span><strong>{{ donations|length }}</strong></div><div><span>Latest activity</span><strong>Recent</strong></div><a class="btn btn-primary" href="{{ url_for('campaigns') }}">Support another cause →</a></div>
+<div class="donation-history">{% for donation in donations %}
+<article class="donation-row reveal"><div class="donation-icon">♥</div><div class="donation-main"><span class="eyebrow">DONATION #{{ loop.index }}</span><h2><a href="{{ url_for('campaign_details', campaign_id=donation.campaign_id) }}">{{ donation.campaign_title }}</a></h2><div class="donation-meta"><span>{{ donation.payment_method|replace('_',' ') }}</span><span>{{ donation.donation_date }}</span></div></div><div class="donation-amount"><strong>₹{{ "%.2f"|format(donation.amount|float) }}</strong><span class="status status-{{ donation.status|lower }}">{{ donation.status|title }}</span></div></article>
+{% endfor %}</div>
+{% else %}<div class="empty-state"><div class="empty-icon">♥</div><h3>No donations yet.</h3><p>Your contributions will appear here after you support a campaign.</p><a class="btn btn-primary" href="{{ url_for('campaigns') }}">Explore campaigns →</a></div>{% endif %}
+</section>
+{% endblock %}

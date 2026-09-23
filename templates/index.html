@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% from "_macros.html" import campaign_card %}
+{% block title %}CrowdCare · Together We Care{% endblock %}
+{% block content %}
+<section class="hero-home">
+  <div class="hero-orbit orbit-one"></div><div class="hero-orbit orbit-two"></div>
+  <div class="container hero-grid">
+    <div class="hero-copy reveal">
+      <span class="eyebrow-pill"><i></i> A platform for real human impact</span>
+      <h1>Small acts.<br><span>Big change.</span></h1>
+      <p>Support urgent needs, back meaningful projects, and help people turn difficult moments into brighter ones.</p>
+      <div class="hero-actions">
+        {% if session.get('role') == 'CREATOR' %}
+          <a class="btn btn-primary btn-large" href="{{ url_for('create_campaign') }}">Start a campaign <b>↗</b></a>
+        {% elif not session.get('user_id') %}
+          <a class="btn btn-primary btn-large" href="{{ url_for('register') }}">Start a campaign <b>↗</b></a>
+        {% else %}
+          <a class="btn btn-primary btn-large" href="{{ url_for('campaigns') }}">Explore campaigns <b>↗</b></a>
+        {% endif %}
+        <a class="btn btn-soft btn-large" href="{{ url_for('campaigns') }}">Explore causes</a>
+      </div>
+      <div class="hero-trust"><div class="avatar-stack"><span>R</span><span>A</span><span>S</span><span>+</span></div><div><strong>Community powered</strong><small>Every contribution moves a story forward.</small></div></div>
+    </div>
+    <div class="hero-visual reveal delay-1">
+      <div class="hero-image-frame"><img src="{{ url_for('static', filename='images/BoyOHH.png') }}" alt="A child supported by community care"></div>
+      <div class="floating-card float-top"><span class="mini-icon">♥</span><div><strong>Every contribution matters</strong><small>Support can arrive one person at a time.</small></div></div>
+      <div class="floating-card float-bottom"><span class="pulse-dot"></span><div><strong>Live platform</strong><small>Campaign data updates from CrowdCare.</small></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="container stats-band reveal">
+  <div class="stat-item"><strong class="animated-stat" data-target="{{ stats.total_raised|float }}" data-stat-type="currency">₹0</strong><span>Total raised</span></div>
+  <div class="stat-item"><strong class="animated-stat" data-target="{{ stats.campaign_count|int }}" data-stat-type="number">0</strong><span>Campaigns</span></div>
+  <div class="stat-item"><strong class="animated-stat" data-target="{{ stats.donor_count|int }}" data-stat-type="number">0</strong><span>Donors</span></div>
+  <div class="stat-item"><strong class="animated-stat" data-target="{{ stats.campaigns_supported|int }}" data-stat-type="number">0</strong><span>Causes supported</span></div>
+</section>
+
+<section class="container section-block" id="featured">
+  <div class="section-head reveal"><div><span class="eyebrow">MAKE AN IMPACT</span><h2>Stories worth standing behind.</h2><p>Discover campaigns currently making a difference across the community.</p></div><a class="text-link" href="{{ url_for('campaigns') }}">View all campaigns →</a></div>
+  <div class="campaign-grid">
+    {% for campaign in featured_campaigns %}{{ campaign_card(campaign) }}{% else %}
+      <div class="empty-state"><div class="empty-icon">✦</div><h3>No featured campaigns yet</h3><p>Approved campaigns will appear here automatically.</p></div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="impact-section" id="about">
+  <div class="container">
+    <div class="section-head center reveal"><span class="eyebrow">HOW IT WORKS</span><h2>Simple by design. Human at the center.</h2><p>From a story that needs support to a community that shows up.</p></div>
+    <div class="process-grid">
+      <div class="process-card reveal"><span>01</span><div class="process-icon">✎</div><h3>Create</h3><p>Tell your story, set a goal, and give your campaign a clear purpose.</p></div>
+      <div class="process-card reveal delay-1"><span>02</span><div class="process-icon">↗</div><h3>Connect</h3><p>Share your cause with people who care about making a difference.</p></div>
+      <div class="process-card reveal delay-2"><span>03</span><div class="process-icon">♥</div><h3>Support</h3><p>Donors contribute through the platform and become part of the story.</p></div>
+      <div class="process-card reveal delay-3"><span>04</span><div class="process-icon">✦</div><h3>Impact</h3><p>Funds reach the campaign and progress becomes visible to the community.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="container story-banner reveal">
+  <div><span class="eyebrow">YOUR STORY MATTERS</span><h2>One campaign can change a life.</h2><p>CrowdCare gives people a place to ask for help, offer help, and see the difference together.</p></div>
+  {% if session.get('role') == 'CREATOR' %}<a class="btn btn-primary" href="{{ url_for('create_campaign') }}">Create a campaign →</a>
+  {% elif not session.get('user_id') %}<a class="btn btn-primary" href="{{ url_for('register') }}">Join CrowdCare →</a>
+  {% else %}<a class="btn btn-primary" href="{{ url_for('campaigns') }}">Find a cause →</a>{% endif %}
+</section>
+
+<section class="container contact-section" id="contact">
+  <div class="section-head center reveal"><span class="eyebrow">GET IN TOUCH</span><h2>Need a hand?</h2><p>Questions about campaigns, donations, or using CrowdCare? Reach out.</p></div>
+  <div class="contact-grid">
+    <a class="contact-card reveal" href="mailto:support@crowdcare.com"><span>✉</span><div><strong>Email support</strong><small>support@crowdcare.com</small></div></a>
+    <a class="contact-card reveal delay-1" href="tel:+919000000000"><span>☎</span><div><strong>Talk to us</strong><small>+91 90000 00000</small></div></a>
+    <div class="contact-card reveal delay-2"><span>⌖</span><div><strong>Based in India</strong><small>Built for communities, everywhere.</small></div></div>
+  </div>
+</section>
+{% endblock %}

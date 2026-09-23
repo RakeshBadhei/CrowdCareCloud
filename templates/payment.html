@@ -1,0 +1,5 @@
+{% extends "base.html" %}
+{% block title %}Confirm donation · CrowdCare{% endblock %}
+{% block content %}
+<section class="container narrow-checkout"><div class="checkout-card reveal"><div class="success-mark soft">₹</div><span class="eyebrow">FINAL REVIEW</span><h1>Confirm your donation.</h1><p class="muted">Please check the details before completing this demo payment.</p><div class="review-list"><div><span>Campaign</span><strong>{{ campaign.title }}</strong></div><div><span>Payment method</span><strong>{{ payment_method|replace('_',' ') }}</strong></div><div class="total"><span>Donation</span><strong>₹{{ "%.2f"|format(amount|float) }}</strong></div></div><form method="POST"><button class="btn btn-primary full-btn" type="submit">Confirm payment →</button></form><a class="center-link" href="{{ url_for('donate', campaign_id=campaign.campaign_id) }}">← Change donation</a><div class="checkout-note">Demo mode · no real money is charged by CrowdCare.</div></div></section>
+{% endblock %}

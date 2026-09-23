@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% from "_macros.html" import campaign_card %}
+{% block title %}Explore Campaigns · CrowdCare{% endblock %}
+{% block content %}
+<section class="page-hero">
+  <div class="container page-hero-inner reveal"><span class="eyebrow">EXPLORE THE COMMUNITY</span><h1>Find a cause that moves you.</h1><p>Browse active campaigns, learn the story behind each one, and choose where your support can make a difference.</p></div>
+</section>
+<section class="container section-block campaign-browser">
+  <div class="browser-toolbar reveal">
+    <div class="search-box"><span>⌕</span><input id="campaignSearch" type="search" placeholder="Search campaigns, cities, causes…"></div>
+    <div class="filter-pills" id="campaignFilters">
+      <button class="filter-pill active" data-filter="all">All</button>
+      <button class="filter-pill" data-filter="medical">Medical</button>
+      <button class="filter-pill" data-filter="education">Education</button>
+      <button class="filter-pill" data-filter="animal">Animal Welfare</button>
+      <button class="filter-pill" data-filter="environment">Environment</button>
+      <button class="filter-pill" data-filter="community">Community</button>
+    </div>
+    <select class="sort-select" id="campaignSort"><option value="default">Recommended</option><option value="progress">Most funded</option><option value="goal">Lowest goal</option></select>
+  </div>
+  <div class="results-line"><span id="campaignCount">{{ campaigns|length }} campaigns</span><a href="{{ url_for('categories') }}">Browse by category →</a></div>
+  <div class="campaign-grid" id="campaignGrid">
+    {% for campaign in campaigns %}{{ campaign_card(campaign) }}{% else %}
+      <div class="empty-state"><div class="empty-icon">⌕</div><h3>No campaigns found</h3><p>There are no public campaigns matching this view.</p></div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

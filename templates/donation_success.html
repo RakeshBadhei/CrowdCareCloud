@@ -1,0 +1,5 @@
+{% extends "base.html" %}
+{% block title %}Donation successful · CrowdCare{% endblock %}
+{% block content %}
+<section class="container success-layout"><div class="success-card reveal"><div class="success-check">✓</div><span class="eyebrow">CONTRIBUTION COMPLETE</span><h1>Thank you for showing up.</h1><p>Your donation to <strong>{{ donation.title }}</strong> has been recorded successfully.</p><div class="success-amount">₹{{ "%.2f"|format(donation.amount|float) }}</div><div class="review-list"><div><span>Donation ID</span><strong>#{{ donation.donation_id }}</strong></div><div><span>Payment method</span><strong>{{ donation.payment_method|replace('_',' ') }}</strong></div></div><div class="form-actions"><a class="btn btn-primary" href="{{ url_for('campaign_details', campaign_id=donation.campaign_id) }}">View campaign</a><a class="btn btn-soft" href="{{ url_for('my_donations') }}">Donation history</a></div></div></section>
+{% endblock %}
